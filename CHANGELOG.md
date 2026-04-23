@@ -1,8 +1,14 @@
 # Changelog
 
-## Unreleased
+## 0.5.0
 
 ### Added
+- **AI can now scope questions to an account.** "What's my biggest expense in Free to Spend?" works — previously the AI had no way to filter transactions by account name.
+- **Transaction filters in AI chat:** label/note (find anything you tagged "tax-deductible"), account name, and pending.
+- **Spending summary by account or merchant** — break down "where did the Bills account money go" by category.
+- **Credit utilization** surfaced when you list accounts (e.g. "15% of $5,000 limit").
+- **New AI tools:** `get_achievements` (list unlocks), `get_score_trend` (daily score history), `get_investment_transactions` (buy/sell activity), `list_recat_rules` + `delete_recat_rule` (audit and remove auto-recategorization rules).
+- **Recurring now merges manual bills** alongside Plaid-detected streams — previously manually-added bills were invisible to the AI.
 - `ray import-apple <path>` — import Apple Card transactions from Apple's CSV export. Apple Card isn't supported by Plaid; this creates a manual account, maps Apple's categories to Ray's taxonomy so transactions participate in spending/scoring/budgets, and is safe to re-run monthly via hash-based deduplication (or `--replace-range` for authoritative overwrites of a date window).
 - `ray import-apple --apr <percent>` — record the Apple Card's APR (e.g. `--apr 22.24`). Persisted into `liabilities.interest_rate`; re-runs without `--apr` preserve the prior stored rate via COALESCE, so you only need to set it once. In TTY mode the command also prompts interactively (blank to skip). Without an APR, AI debt tools now render the card as "APR unknown" rather than 0%.
 - AI debt tooling now distinguishes "APR unknown" from "0% APR". `get_debts` renders `APR unknown` for debts with no stored `interest_rate` (e.g. Apple Card imports without `--apr`); `calculate_debt_payoff` sorts unknown-APR debts alongside high-rate debts under the avalanche strategy and simulates payoff at an assumed ~20% retail-card rate with an explicit note; `computeInsights` appends an "unknown APR" note listing the affected debts so the model asks the user to confirm or treats them as high-rate when advising on payoff order. Previously, a NULL `interest_rate` was silently coerced to 0, causing the AI to deprioritize Apple Card debt behind student loans and mortgages.
