@@ -185,14 +185,21 @@ export async function runLink(): Promise<void> {
 
   let provider = configuredProviders[0];
   if (configuredProviders.length > 1) {
+    const regionHints: Record<string, string> = {
+      plaid: "US/Canada banks",
+      bridge: "European banks (France, EU)",
+    };
     const { providerKey } = await inquirer.prompt([{
       type: "list",
       name: "providerKey",
       message: "Which provider would you like to use?",
-      choices: configuredProviders.map(candidate => ({
-        name: candidate.displayName,
-        value: candidate.key,
-      })),
+      choices: configuredProviders.map(candidate => {
+        const hint = regionHints[candidate.key];
+        return {
+          name: hint ? `${candidate.displayName} — ${hint}` : candidate.displayName,
+          value: candidate.key,
+        };
+      }),
     }]);
     provider = configuredProviders.find(candidate => candidate.key === providerKey) || configuredProviders[0];
   }
