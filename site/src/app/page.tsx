@@ -753,7 +753,7 @@ function Pricing() {
             <ul className="mt-8 space-y-3 text-sm text-stone-600">
               <PricingItem>Open source, MIT licensed</PricingItem>
               <PricingItem>Your own AI key (Anthropic, OpenAI, Ollama, etc.)</PricingItem>
-              <PricingItem>Your own Plaid credentials</PricingItem>
+              <PricingItem>Your own Plaid (US/Canada) or Bridge (Europe) credentials</PricingItem>
               <PricingItem>Full model selection</PricingItem>
               <PricingItem>All features included</PricingItem>
             </ul>
