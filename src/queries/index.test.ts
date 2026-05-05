@@ -721,8 +721,12 @@ describe("forecastBalance excludes LOAN_PAYMENTS from inflow", () => {
   it("avgMonthlyInflow excludes LOAN_PAYMENTS and TRANSFER_IN", () => {
     seedAccount(db, { id: "a", type: "depository", balance: 10000 });
 
+    // Seeds at 25/50/75 days ago (not 30/60/90) to stay safely inside
+    // forecastBalance's 3-month window. setMonth(-3) and daysAgo(90) can
+    // disagree by a day on month-boundary dates (e.g. May 5 → Feb 5 vs Feb 4),
+    // silently dropping the boundary row and turning this test flaky.
     for (let m = 1; m <= 3; m++) {
-      const date = daysAgo(m * 30);
+      const date = daysAgo(m * 25);
       seedTransaction(db, { id: `inc-${m}`, accountId: "a", amount: -5000, date, name: "Paycheck", category: "INCOME" });
       seedTransaction(db, { id: `lp-${m}`, accountId: "a", amount: -1000, date, name: "CC Payment", category: "LOAN_PAYMENTS" });
       seedTransaction(db, { id: `xfr-${m}`, accountId: "a", amount: -500, date, name: "Transfer", category: "TRANSFER_IN" });
@@ -786,8 +790,11 @@ describe("expense-side LOAN_PAYMENTS exclusion parity (F010)", () => {
     // stable. Each month mirrors the contract: one 3000 expense + one 1000
     // LOAN_PAYMENTS row (must not inflate the average).
     seedAccount(db, { id: "c", type: "depository", balance: 10000 });
+    // 25/50/75 days ago to stay safely inside forecastBalance's 3-month
+    // window — daysAgo(90) and setMonth(-3) can disagree by a day on
+    // month-boundary dates and silently drop the boundary row.
     for (let m = 1; m <= 3; m++) {
-      const date = daysAgo(m * 30);
+      const date = daysAgo(m * 25);
       seedTransaction(db, { id: `c-inc-${m}`, accountId: "c", amount: -5000, date, name: "Paycheck", category: "INCOME" });
       seedTransaction(db, { id: `c-exp-${m}`, accountId: "c", amount: 3000, date, name: "Rent", category: "RENT_AND_UTILITIES" });
       seedTransaction(db, { id: `c-lp-${m}`, accountId: "c", amount: 1000, date, name: "Apple Card Payment", category: "LOAN_PAYMENTS" });
