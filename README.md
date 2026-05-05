@@ -60,7 +60,7 @@ That's the difference. Ray doesn't describe your situation back to you. It tells
 
 ### Set it and forget it
 
-- **Bank sync via Plaid** — Connect checking, savings, credit cards, investments, and loans. Supports 🇺🇸 United States, 🇬🇧 United Kingdom, and 🇨🇦 Canada.
+- **Bank sync via Plaid or Bridge** — Connect checking, savings, credit cards, investments, and loans. Plaid supports 🇺🇸 United States and 🇨🇦 Canada. Bridge supports 🇪🇺 Europe (France and the broader EU via PSD2).
 - **Scheduled daily sync** — Automatic bank sync via launchd (macOS) or cron (Linux).
 - **Auto-recategorization** — Define rules to automatically re-label transactions.
 - **Export/import** — Back up and restore your financial data.
@@ -110,11 +110,11 @@ We handle the API keys. Your data stays local. $10/mo.
 
 ### Bring your own keys
 
-Bring your own AI and Plaid credentials. Free forever.
+Bring your own AI and banking credentials. Free forever.
 
 1. Pick your AI provider — Anthropic, OpenAI, Ollama (local), or any OpenAI-compatible endpoint
 2. Enter your API key and pick a model
-3. Enter your Plaid credentials ([get free keys](https://dashboard.plaid.com/signup))
+3. Enter your banking credentials — Plaid for 🇺🇸/🇨🇦 ([get free keys](https://dashboard.plaid.com/signup)), Bridge for 🇪🇺 Europe ([get free keys](https://dashboard.bridgeapi.io/signup)), or both
 4. Link your accounts — checking, savings, credit cards, investments, loans, mortgage
 5. Done
 
@@ -154,7 +154,7 @@ Run `ray --help` to see all available commands.
 ```
   Checking · Savings · Credit · Investments · Loans · Mortgage
                             │
-                        Plaid API
+                   Plaid API · Bridge API
                             │
                  ┌──────────▼──────────┐
                  │   Local SQLite DB    │
@@ -171,7 +171,7 @@ Run `ray --help` to see all available commands.
                      (PII-masked)
 ```
 
-Two outbound calls: Plaid (bank sync) and your AI provider (PII-masked). Supports Anthropic, OpenAI, Ollama, and any OpenAI-compatible endpoint. Your financial data is never stored off your machine. No telemetry. No analytics.
+Two outbound calls: your bank aggregator (Plaid or Bridge) and your AI provider (PII-masked). Supports Anthropic, OpenAI, Ollama, and any OpenAI-compatible endpoint. Your financial data is never stored off your machine. No telemetry. No analytics.
 
 ## Apple Card
 
@@ -187,10 +187,10 @@ On first run Ray creates an "Apple Card" manual account. On subsequent monthly i
 
 - All financial data stored locally in `~/.ray/data/finance.db`
 - Database encrypted with AES-256 (SQLCipher)
-- Plaid access tokens encrypted at rest with AES-256-GCM
+- Plaid and Bridge access tokens encrypted at rest with AES-256-GCM
 - Config file stored with `0600` permissions
 - PII redacted before sending to any AI provider
-- No data leaves your machine — only API calls to Plaid and your AI provider
+- No data leaves your machine — only API calls to your bank aggregator (Plaid or Bridge) and your AI provider
 
 ## Configuration
 
@@ -216,11 +216,14 @@ OPENAI_COMPATIBLE_KEY=      # API key for OpenAI or compatible provider
 OPENAI_COMPATIBLE_BASE_URL= # Base URL (e.g. https://api.openai.com/v1, http://localhost:11434/v1)
 RAY_PROVIDER=               # "anthropic" or "openai-compatible"
 RAY_MODEL=                  # Model name (e.g. claude-sonnet-4-6, gpt-4o, llama3.1)
-PLAID_CLIENT_ID=            # Plaid client ID
+PLAID_CLIENT_ID=            # Plaid client ID (US/Canada banks)
 PLAID_SECRET=               # Plaid secret key
 PLAID_ENV=production        # Plaid environment
+BRIDGE_CLIENT_ID=           # Bridge client ID (European banks)
+BRIDGE_CLIENT_SECRET=       # Bridge client secret
+BRIDGE_DEFAULT_EXTERNAL_USER_ID= # Optional: reuse an existing Bridge external_user_id
 DB_ENCRYPTION_KEY=          # Database encryption key
-PLAID_TOKEN_SECRET=         # Key for encrypting stored Plaid tokens
+PLAID_TOKEN_SECRET=         # Key for encrypting stored Plaid/Bridge tokens
 RAY_API_KEY=                # Ray API key (managed mode, replaces the above)
 ```
 

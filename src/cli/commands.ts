@@ -28,6 +28,9 @@ import { resolve } from "path";
 import { homedir } from "os";
 import { heading, progressBar, formatMoney, formatMoneyColored, padColumns, dim, formatDuration, formatError, renderLogo, institutionName } from "./format.js";
 import { getUpcomingBills } from "../db/bills.js";
+import { getConfiguredProviders } from "../providers/index.js";
+import { parseProviderState } from "../providers/state.js";
+import { describeBridgeProviderState, type BridgeProviderState } from "../providers/bridge/status.js";
 
 /**
  * Shared strict money parser used by BOTH the exit-on-error CLI-flag wrapper
@@ -167,24 +170,43 @@ export async function runSync(): Promise<void> {
 }
 
 export async function runLink(): Promise<void> {
-  const open = (await import("open")).default;
-  const ora = (await import("ora")).default;
   const readline = await import("readline");
+  const inquirer = (await import("inquirer")).default;
+  const ora = (await import("ora")).default;
+  const db = getDb();
+  const configuredProviders = getConfiguredProviders();
 
-  const { url, waitForComplete, stop } = startLinkServer();
   console.log(`\n${heading("Link Account")}\n`);
-  console.log(`Opening Plaid Link in your browser...\n`);
-  console.log(dim(`  ${url}\n`));
 
-  await open(url);
+  if (configuredProviders.length === 0) {
+    console.log("No banking provider is configured. Run 'ray setup' first.\n");
+    return;
+  }
 
-  const spinner = ora("Waiting for bank connection...").start();
-  await waitForComplete();
-  stop();
-  spinner.succeed("Bank account linked successfully!");
+  let provider = configuredProviders[0];
+  if (configuredProviders.length > 1) {
+    const regionHints: Record<string, string> = {
+      plaid: "US/Canada banks",
+      bridge: "European banks (France, EU)",
+    };
+    const { providerKey } = await inquirer.prompt([{
+      type: "list",
+      name: "providerKey",
+      message: "Which provider would you like to use?",
+      choices: configuredProviders.map(candidate => {
+        const hint = regionHints[candidate.key];
+        return {
+          name: hint ? `${candidate.displayName} — ${hint}` : candidate.displayName,
+          value: candidate.key,
+        };
+      }),
+    }]);
+    provider = configuredProviders.find(candidate => candidate.key === providerKey) || configuredProviders[0];
+  }
+
+  await provider.link(db);
 
   // Check if a mortgage was linked and we don't already have a property account
-  const db = getDb();
   const hasMortgage = db.prepare(
     `SELECT 1 FROM accounts WHERE type = 'loan' AND subtype = 'mortgage' LIMIT 1`
   ).get();
@@ -229,13 +251,13 @@ export async function showAccounts(): Promise<void> {
   // below, so we exclude it from the `(manual)` suffix to avoid a redundant
   // tag on that header.
   const institutions = db.prepare(
-    `SELECT i.name as institution, i.item_id, i.created_at, i.logo, i.primary_color,
+    `SELECT i.name as institution, i.item_id, i.created_at, i.logo, i.primary_color, i.provider, i.provider_state,
             CASE WHEN i.access_token = 'manual' AND i.item_id != 'manual-assets' THEN 1 ELSE 0 END AS is_manual,
             a.name, a.type, a.subtype, a.mask, a.current_balance, a.currency
      FROM institutions i
      LEFT JOIN accounts a ON a.item_id = i.item_id AND a.hidden = 0
      ORDER BY i.created_at, a.type, a.current_balance DESC`
-  ).all() as { institution: string; item_id: string; created_at: string; logo: string | null; primary_color: string | null; is_manual: number; name: string | null; type: string | null; subtype: string | null; mask: string | null; current_balance: number | null; currency: string | null }[];
+  ).all() as { institution: string; item_id: string; created_at: string; logo: string | null; primary_color: string | null; provider: string | null; provider_state: string | null; is_manual: number; name: string | null; type: string | null; subtype: string | null; mask: string | null; current_balance: number | null; currency: string | null }[];
 
   if (institutions.length === 0) {
     console.log("\nNo accounts yet. Run 'ray link', 'ray add', or 'ray import-apple' to get started.\n");
@@ -266,7 +288,12 @@ export async function showAccounts(): Promise<void> {
       if (logo) logoStr = logo.replace(/\n/g, "") + " ";
     }
     const manualLabel = first.is_manual === 1 ? dim(" (manual)") : "";
-    console.log(`${logoStr}${institutionName(first.institution, first.primary_color)}${manualLabel}`);
+    const providerLabel = first.provider === "bridge" ? dim(" [Bridge]") : "";
+    console.log(`${logoStr}${institutionName(first.institution, first.primary_color)}${manualLabel}${providerLabel}`);
+    if (first.provider === "bridge") {
+      const bridgeStatus = describeBridgeProviderState(parseProviderState<BridgeProviderState>(first.provider_state));
+      if (bridgeStatus) console.log(dim(`  ${bridgeStatus}`));
+    }
 
     for (const row of rows) {
       if (!row.name) {
