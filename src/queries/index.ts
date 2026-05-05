@@ -128,6 +128,9 @@ export interface TransactionFilters {
   // imports, whose rows have everyday-merchant names and no bank-flavored
   // string in name/merchant to disambiguate source from Plaid rows.
   accountName?: string;
+  account?: string;
+  label?: string;
+  excludePending?: boolean;
   minAmount?: number;
   maxAmount?: number;
   limit?: number;
@@ -190,10 +193,10 @@ export function getNetWorth(db: Database): {
   };
 }
 
-export function getAccountBalances(db: Database): { name: string; balance: number; type: string }[] {
+export function getAccountBalances(db: Database): { name: string; balance: number; type: string; balance_limit: number | null }[] {
   return db
     .prepare(
-      `SELECT name, current_balance as balance, type FROM accounts
+      `SELECT name, current_balance as balance, type, balance_limit FROM accounts
        WHERE hidden = 0 ORDER BY type, current_balance DESC`
     )
     .all() as any[];
@@ -378,6 +381,17 @@ export function getTransactionsFiltered(
     conditions.push(`LOWER(a.name) LIKE LOWER(?) ESCAPE '\\'`);
     params.push(`%${escapeLikePattern(filters.accountName)}%`);
   }
+  if (filters.account) {
+    conditions.push(`t.account_id IN (SELECT account_id FROM accounts WHERE name LIKE ?)`);
+    params.push(`%${filters.account}%`);
+  }
+  if (filters.label) {
+    conditions.push(`(t.label LIKE ? OR t.note LIKE ?)`);
+    params.push(`%${filters.label}%`, `%${filters.label}%`);
+  }
+  if (filters.excludePending) {
+    conditions.push(`t.pending = 0`);
+  }
   if (filters.minAmount !== undefined) {
     conditions.push(`t.amount >= ?`);
     params.push(filters.minAmount);
@@ -422,7 +436,7 @@ export function getIncome(db: Database, startDate: string, endDate: string): { s
 
 // --- Full-text search ---
 
-export function searchTransactions(db: Database, query: string, limit = 30): { transaction_id: string; account_id: string; account_name: string | null; name: string; merchant_name: string | null; amount: number; category: string; date: string }[] {
+export function searchTransactions(db: Database, query: string, limit = 30, account?: string): { transaction_id: string; account_id: string; account_name: string | null; name: string; merchant_name: string | null; amount: number; category: string; date: string }[] {
   // Escape %/_/\\ so an AI-steered `%` can't match every row. ESCAPE '\\'
   // teaches SQLite the escape byte; without it the LIKE pattern is wide
   // open to wildcard injection.
@@ -434,6 +448,18 @@ export function searchTransactions(db: Database, query: string, limit = 30): { t
   // generic merchant shape (e.g. an Uber charge on both). A LEFT JOIN keeps
   // orphan transactions (account_id without a matching accounts row)
   // visible with account_name=NULL rather than silently dropping them.
+  if (account) {
+    const accountPattern = `%${escapeLikePattern(account)}%`;
+    return db.prepare(
+      `SELECT t.transaction_id, t.account_id, a.name AS account_name,
+              t.name, t.merchant_name, t.amount, t.category, t.date
+       FROM transactions t
+       LEFT JOIN accounts a ON t.account_id = a.account_id
+       WHERE (t.name LIKE ? ESCAPE '\\' OR t.merchant_name LIKE ? ESCAPE '\\' OR t.category LIKE ? ESCAPE '\\')
+       AND LOWER(a.name) LIKE LOWER(?) ESCAPE '\\'
+       ORDER BY t.date DESC LIMIT ?`
+    ).all(pattern, pattern, pattern, accountPattern, limit) as any[];
+  }
   return db.prepare(
     `SELECT t.transaction_id, t.account_id, a.name AS account_name,
             t.name, t.merchant_name, t.amount, t.category, t.date

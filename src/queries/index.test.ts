@@ -338,6 +338,27 @@ describe("getTransactionsFiltered", () => {
     const exact = getTransactionsFiltered(db, { merchant: "Starbucks" });
     expect(exact.length).toBe(1);
   });
+
+  it("filters by account name (partial match)", () => {
+    seedAccount(db, { id: "b", type: "depository", balance: 500, name: "Free to Spend" });
+    seedTransaction(db, { id: "t4", accountId: "b", amount: 100, date: "2025-02-15", name: "Target", category: "GENERAL_MERCHANDISE" });
+    const txns = getTransactionsFiltered(db, { account: "Free" });
+    expect(txns.length).toBe(1);
+    expect(txns[0].transaction_id).toBe("t4");
+  });
+
+  it("filters by label (partial match on label or note)", () => {
+    db.prepare(`UPDATE transactions SET label = 'tax-deductible' WHERE transaction_id = 't2'`).run();
+    db.prepare(`UPDATE transactions SET note = 'business dinner' WHERE transaction_id = 't1'`).run();
+    expect(getTransactionsFiltered(db, { label: "tax" }).length).toBe(1);
+    expect(getTransactionsFiltered(db, { label: "business" }).length).toBe(1);
+  });
+
+  it("excludes pending when excludePending is true", () => {
+    seedTransaction(db, { id: "tp", accountId: "a", amount: 25, date: "2025-02-25", name: "Pending", category: "OTHER", pending: 1 });
+    expect(getTransactionsFiltered(db, {}).length).toBe(4); // includes pending by default
+    expect(getTransactionsFiltered(db, { excludePending: true }).length).toBe(3);
+  });
 });
 
 describe("searchTransactions", () => {
@@ -365,6 +386,13 @@ describe("searchTransactions", () => {
     // `_` must not single-char-wildcard; 'Ub_r' should not match 'Uber*'.
     const noSingleCharWildcard = searchTransactions(db, "Ub_r");
     expect(noSingleCharWildcard).toEqual([]);
+  });
+
+  it("scopes search to a named account when account arg provided", () => {
+    seedAccount(db, { id: "b", type: "depository", balance: 500, name: "Free to Spend" });
+    seedTransaction(db, { id: "t3", accountId: "b", amount: 40, date: "2025-01-17", name: "Uber One", category: "FOOD_AND_DRINK" });
+    expect(searchTransactions(db, "Uber").length).toBe(3);
+    expect(searchTransactions(db, "Uber", 30, "Free").length).toBe(1);
   });
 });
 
