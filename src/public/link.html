@@ -60,7 +60,8 @@
     button:hover { opacity: 0.85; }
     button:disabled { opacity: 0.3; cursor: not-allowed; }
     .success { color: #34d399; font-weight: 500; }
-    .error { color: #f87171; font-size: 13px; margin-top: 16px; }
+    .error { color: #f87171; font-size: 13px; margin-top: 16px; line-height: 1.5; }
+    .error a { color: #f87171; text-decoration: underline; }
     .success-title-check {
       width: 18px;
       height: 18px;
@@ -136,9 +137,16 @@
         });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          throw new Error(data.error || 'Failed to connect. Please run "ray link" again.');
+          const err = new Error(data.error || 'Failed to connect. Please run "ray link" again.');
+          err.code = data.error_code;
+          throw err;
         }
         const { link_token } = await res.json();
+
+        // Persist link_token + session for OAuth redirect flow (Chase, Capital One, etc.)
+        try {
+          localStorage.setItem('ray_plaid_link', JSON.stringify({ link_token, session_id: sessionId }));
+        } catch {}
 
         linkHandler = Plaid.create({
           token: link_token,
@@ -156,7 +164,13 @@
                   institution_id: metadata.institution?.institution_id || null,
                 }),
               });
-              if (!resp.ok) throw new Error('Exchange failed');
+              if (!resp.ok) {
+                const data = await resp.json().catch(() => ({}));
+                const err = new Error(data.error || 'Exchange failed');
+                err.code = data.error_code;
+                throw err;
+              }
+              try { localStorage.removeItem('ray_plaid_link'); } catch {}
               const result = await resp.json();
               document.getElementById('connect-view').style.display = 'none';
               document.getElementById('success-view').style.display = 'block';
@@ -171,7 +185,7 @@
                 logoEl.style.display = 'inline-block';
               }
             } catch (e) {
-              showError('Failed to link account. Please try again with "ray link".');
+              showError(e.message || 'Failed to link account. Please try again with "ray link".', e.code);
             }
           },
           onExit: (err) => {
@@ -182,13 +196,29 @@
         linkHandler.open();
         document.getElementById('connect-view').style.display = 'none';
       } catch (e) {
-        showError(e.message || 'This link has expired. Please run "ray link" again.');
+        showError(e.message || 'This link has expired. Please run "ray link" again.', e.code);
       }
     }
 
-    function showError(msg) {
+    function hintForCode(code) {
+      switch (code) {
+        case 'INVALID_PRODUCT':
+        case 'PRODUCTS_NOT_SUPPORTED':
+        case 'PRODUCT_NOT_READY':
+          return 'Your Plaid account isn\'t approved for this product. Request access at <a href="https://dashboard.plaid.com" target="_blank" rel="noopener">dashboard.plaid.com</a> → Account → Products.';
+        case 'INVALID_API_KEYS':
+          return 'Check your PLAID_CLIENT_ID and PLAID_SECRET in ~/.ray/config.json.';
+        case 'INVALID_FIELD':
+          return 'If your bank uses OAuth (Chase, Capital One), set PLAID_REDIRECT_URI and register the same URL in your Plaid dashboard.';
+        default:
+          return '';
+      }
+    }
+
+    function showError(msg, code) {
       const el = document.getElementById('error');
-      el.textContent = msg;
+      const hint = hintForCode(code);
+      el.innerHTML = msg.replace(/</g, '&lt;') + (hint ? '<br><br>' + hint : '');
       el.style.display = 'block';
     }
 

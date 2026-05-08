@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.png">
+  <title>Ray — Returning from your bank</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body {
+      font-family: 'SF Mono', SFMono-Regular, ui-monospace, 'DejaVu Sans Mono', Menlo, Consolas, monospace;
+      background: #202023;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .top-logo {
+      position: absolute;
+      top: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .top-logo img { height: 20px; filter: invert(1); }
+    .container { text-align: center; max-width: 400px; width: 100%; }
+    h1 { font-size: 16px; font-weight: 500; margin-bottom: 8px; color: #ffffff; letter-spacing: -0.01em; }
+    p { font-size: 13px; color: #9c9da1; margin-bottom: 24px; line-height: 1.6; }
+    .error { color: #f87171; font-size: 13px; margin-top: 16px; line-height: 1.5; }
+    .error a { color: #f87171; text-decoration: underline; }
+    .spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #9c9da1;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="top-logo"><img src="/ray-logo-dark.png" alt="Ray"></div>
+  <div class="container">
+    <div id="view">
+      <div class="spinner"></div>
+      <h1>Finishing connection</h1>
+      <p>Completing OAuth handoff with your bank...</p>
+      <div id="error" class="error" style="display:none"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+  <script>
+    function showError(msg) {
+      const el = document.getElementById('error');
+      el.innerHTML = msg;
+      el.style.display = 'block';
+    }
+
+    async function resume() {
+      let stored;
+      try { stored = JSON.parse(localStorage.getItem('ray_plaid_link') || 'null'); } catch {}
+      if (!stored || !stored.link_token || !stored.session_id) {
+        showError('OAuth session not found. Please run "ray link" again.');
+        return;
+      }
+
+      if (typeof Plaid === 'undefined') {
+        let attempts = 0;
+        await new Promise((resolve, reject) => {
+          const check = setInterval(() => {
+            if (typeof Plaid !== 'undefined') { clearInterval(check); resolve(); }
+            else if (++attempts > 50) { clearInterval(check); reject(new Error('Failed to load Plaid SDK.')); }
+          }, 100);
+        });
+      }
+
+      const handler = Plaid.create({
+        token: stored.link_token,
+        receivedRedirectUri: window.location.href,
+        onSuccess: async (publicToken, metadata) => {
+          document.getElementById('view').innerHTML = '<div class="spinner"></div><h1>Linking</h1><p>Syncing ' + (metadata.institution?.name || 'account') + '...</p>';
+          try {
+            const resp = await fetch('/api/exchange', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                public_token: publicToken,
+                session_id: stored.session_id,
+                institution_name: metadata.institution?.name || 'Bank Account',
+                institution_id: metadata.institution?.institution_id || null,
+              }),
+            });
+            if (!resp.ok) {
+              const data = await resp.json().catch(() => ({}));
+              throw new Error(data.error || 'Exchange failed');
+            }
+            try { localStorage.removeItem('ray_plaid_link'); } catch {}
+            const result = await resp.json();
+            const name = result.institution_name || metadata.institution?.name || 'Account';
+            document.getElementById('view').innerHTML = '<h1 style="color:#34d399">' + name + ' Connected</h1><p>Syncing transactions. You can close this page.</p>';
+          } catch (e) {
+            showError(e.message || 'Failed to link account. Please run "ray link" again.');
+          }
+        },
+        onExit: (err) => {
+          if (err) showError('Connection cancelled. Please run "ray link" again.');
+        },
+      });
+      handler.open();
+    }
+
+    resume().catch(e => showError(e.message || 'Unexpected error. Please run "ray link" again.'));
+  </script>
+</body>
+</html>

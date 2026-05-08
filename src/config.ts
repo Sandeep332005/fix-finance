@@ -15,6 +15,8 @@ export interface RayConfig {
   plaidClientId: string;
   plaidSecret: string;
   plaidEnv: string;
+  plaidRedirectUri: string;
+  plaidOptionalProducts: string[];
   bridgeClientId: string;
   bridgeClientSecret: string;
   bridgeDefaultExternalUserId: string;
@@ -83,6 +85,13 @@ function buildConfig(): RayConfig {
     plaidClientId: file.plaidClientId || process.env.PLAID_CLIENT_ID || "",
     plaidSecret: file.plaidSecret || process.env.PLAID_SECRET || "",
     plaidEnv: file.plaidEnv || process.env.PLAID_ENV || "production",
+    plaidRedirectUri: file.plaidRedirectUri || process.env.PLAID_REDIRECT_URI || "",
+    plaidOptionalProducts:
+      file.plaidOptionalProducts ||
+      (process.env.PLAID_OPTIONAL_PRODUCTS || "")
+        .split(",")
+        .map(s => s.trim())
+        .filter(Boolean),
     bridgeClientId: file.bridgeClientId || process.env.BRIDGE_CLIENT_ID || "",
     bridgeClientSecret: file.bridgeClientSecret || process.env.BRIDGE_CLIENT_SECRET || "",
     bridgeDefaultExternalUserId: file.bridgeDefaultExternalUserId || process.env.BRIDGE_DEFAULT_EXTERNAL_USER_ID || "",

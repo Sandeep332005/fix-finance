@@ -38,6 +38,28 @@ interface LinkResult {
   stop: () => void;
 }
 
+interface PlaidErrorJson {
+  error: string;
+  error_code?: string;
+  error_type?: string;
+}
+
+function plaidErrorJson(error: any, fallback: string): PlaidErrorJson {
+  const data = error?.response?.data;
+  const code: string | undefined = data?.error_code;
+  const type: string | undefined = data?.error_type;
+  let message: string =
+    data?.display_message ||
+    data?.error_message ||
+    error?.message ||
+    fallback;
+  if (code === "INVALID_API_KEYS") {
+    message =
+      "Plaid credentials error — make sure you're using production (not sandbox) keys. Check PLAID_CLIENT_ID and PLAID_SECRET in ~/.ray/config.json.";
+  }
+  return { error: message, error_code: code, error_type: type };
+}
+
 export function startLinkServer(): LinkResult {
   const app = express();
   app.use(express.json());
@@ -79,6 +101,11 @@ export function startLinkServer(): LinkResult {
     res.sendFile(resolve(__dirname, "public", "link.html"));
   });
 
+  // OAuth redirect return page (Chase, Capital One, etc. send the user here after bank login)
+  app.get("/oauth-return", (_req, res) => {
+    res.sendFile(resolve(__dirname, "public", "oauth-return.html"));
+  });
+
   // Create link token
   app.post("/api/link-token", async (req, res) => {
     try {
@@ -90,15 +117,9 @@ export function startLinkServer(): LinkResult {
       const linkToken = await createLinkToken();
       res.json({ link_token: linkToken });
     } catch (error: any) {
-      console.error("Link token error:", error.message);
-      const plaidStatus = error?.response?.status;
-      if (plaidStatus === 400 || plaidStatus === 401 || plaidStatus === 403) {
-        res.status(500).json({
-          error: "Plaid credentials error — make sure you're using production (not sandbox) keys. Check PLAID_CLIENT_ID and PLAID_SECRET in ~/.ray/config.json.",
-        });
-      } else {
-        res.status(500).json({ error: "Failed to create link token: " + (error.message || "unknown error") });
-      }
+      const body = plaidErrorJson(error, "Failed to create link token");
+      console.error("Link token error:", body.error_code || "", error?.response?.data || error.message);
+      res.status(500).json(body);
     }
   });
 
@@ -228,8 +249,9 @@ export function startLinkServer(): LinkResult {
       // Signal completion
       resolveComplete!();
     } catch (error: any) {
-      console.error("Token exchange error:", error.message);
-      res.status(500).json({ error: "Failed to link account" });
+      const body = plaidErrorJson(error, "Failed to link account");
+      console.error("Token exchange error:", body.error_code || "", error?.response?.data || error.message);
+      res.status(500).json(body);
     }
   });
 

@@ -10,13 +10,22 @@ export function getCountryCodes(): CountryCode[] {
   return codes.length > 0 ? codes : [CountryCode.Us];
 }
 
+function resolveOptionalProducts(): Products[] {
+  const valid = new Set(Object.values(Products) as string[]);
+  return config.plaidOptionalProducts
+    .map(p => p.toLowerCase())
+    .filter(p => valid.has(p)) as Products[];
+}
+
 /** Create a link token for initializing Plaid Link */
 export async function createLinkToken(products: Products[] = [Products.Transactions]) {
+  const optional = resolveOptionalProducts();
   const resp = await plaidClient.linkTokenCreate({
     user: { client_user_id: "ray-user" },
     client_name: "Ray Finance",
     products,
-    optional_products: [Products.Investments, Products.Liabilities],
+    ...(optional.length > 0 ? { optional_products: optional } : {}),
+    ...(config.plaidRedirectUri ? { redirect_uri: config.plaidRedirectUri } : {}),
     country_codes: getCountryCodes(),
     language: "en",
   });

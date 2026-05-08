@@ -118,6 +118,12 @@ Bring your own AI and banking credentials. Free forever.
 4. Link your accounts — checking, savings, credit cards, investments, loans, mortgage
 5. Done
 
+**Plaid OAuth banks (Chase, Capital One, etc.)** redirect through their bank's site, so you must:
+- Set `PLAID_REDIRECT_URI=http://localhost:9876/oauth-return` (use your `RAY_PORT` if you changed it).
+- In your [Plaid dashboard](https://dashboard.plaid.com) → Team Settings → API → Allowed redirect URIs, register the same URL. `http://localhost` is allowed by Plaid for local dev.
+
+**Plaid optional products** — Investments and Liabilities are off by default. If your Plaid account is approved for them, opt in with `PLAID_OPTIONAL_PRODUCTS=investments,liabilities`. Leaving them on without approval will cause `ray link` to fail.
+
 ## Commands
 
 Run `ray --help` to see all available commands.
@@ -219,6 +225,8 @@ RAY_MODEL=                  # Model name (e.g. claude-sonnet-4-6, gpt-4o, llama3
 PLAID_CLIENT_ID=            # Plaid client ID (US/Canada banks)
 PLAID_SECRET=               # Plaid secret key
 PLAID_ENV=production        # Plaid environment
+PLAID_REDIRECT_URI=         # Required for OAuth banks (Chase, Capital One). e.g. http://localhost:9876/oauth-return — must also be registered in your Plaid dashboard under Team Settings → API → Allowed redirect URIs
+PLAID_OPTIONAL_PRODUCTS=    # Comma-separated, e.g. investments,liabilities — only enable if your Plaid account is approved for them
 BRIDGE_CLIENT_ID=           # Bridge client ID (European banks)
 BRIDGE_CLIENT_SECRET=       # Bridge client secret
 BRIDGE_DEFAULT_EXTERNAL_USER_ID= # Optional: reuse an existing Bridge external_user_id
