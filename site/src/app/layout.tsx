@@ -87,16 +87,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${GeistPixelSquare.variable}`} style={{ colorScheme: "light" }}>
-      <body className="bg-stone-50 text-stone-900 font-sans">
+      <body className="bg-paper text-stone-900 font-sans">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
         {children}
         <Footer />
-        <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-50 select-none overflow-hidden font-mono text-lg leading-none text-stone-300/40" aria-hidden="true">
-          <p className="whitespace-nowrap">{"░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒░▒"}</p>
-        </div>
         <Analytics />
       </body>
     </html>

@@ -110,7 +110,6 @@ export default function Home() {
       />
       <Nav />
       <Hero />
-      <SocialProof />
       <Terminal />
       <Reveal><Context /></Reveal>
       <Reveal><Story /></Reveal>
@@ -141,104 +140,65 @@ async function NpmDownloads() {
   if (!downloads) return null;
 
   return (
-    <div className="animate-fade-up-delay-2 mt-6 flex items-center justify-center gap-1.5 text-sm text-stone-400">
-      <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-      </svg>
-      {downloads.toLocaleString()} installs this month
-    </div>
+    <span>{" · "}{downloads.toLocaleString()} installs this month</span>
   );
 }
 
 /* ─── Hero ─── */
 function Hero() {
   return (
-    <section className="relative overflow-hidden pt-24 pb-12 sm:pt-32">
-      <div className="mx-auto max-w-5xl px-6 text-center">
-        <h1 className="animate-fade-up text-6xl leading-[1.05] font-black tracking-tight text-stone-950 sm:text-7xl lg:text-8xl">
+    <section className="pt-32 pb-10 sm:pt-40">
+      <div className="mx-auto max-w-2xl px-6 text-center">
+        <h1 className="animate-fade-up text-5xl leading-[1.08] font-extrabold tracking-tight text-stone-950 sm:text-6xl">
           Talk to your&nbsp;money
         </h1>
-        <p className="animate-fade-up-delay-1 mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-stone-500 sm:text-xl">
-          Every other finance app shows you what you spent. <span className="text-stone-900 font-medium">Ray tells you what to do about it</span>&mdash;using your real bank data, running locally on your machine.
+        <p className="animate-fade-up-delay-1 mx-auto mt-5 max-w-md text-base leading-relaxed text-stone-500">
+          Every other finance app shows you what you spent.{" "}
+          <span className="font-medium text-stone-900">Ray tells you what to do about it</span>
+          &mdash;using your real bank data, running locally on your machine.
         </p>
-        <div className="animate-fade-up-delay-2 mt-10 flex flex-col items-center gap-4">
+        <div className="animate-fade-up-delay-2 mt-8 flex flex-col items-center gap-3">
           <CopyCommand
             command="npm install -g ray-finance"
-            className="rounded-lg bg-stone-900 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-stone-900/20 transition-colors hover:bg-stone-800 [&>span:first-child]:text-stone-500"
+            className="rounded-full bg-stone-900 px-5 py-2.5 text-sm text-white transition-colors hover:bg-stone-800 [&>span:first-child]:text-stone-500"
           />
           <VideoModal youtubeId="-ULzglbZmPg">
-            <span className="inline-flex items-center gap-2 text-sm font-medium text-stone-500 transition-colors hover:text-stone-700">
-              <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-              </svg>
-              Watch demo
+            <span className="text-sm text-stone-500 underline decoration-stone-300 underline-offset-4 transition-colors hover:text-stone-700">
+              Watch the demo
             </span>
           </VideoModal>
         </div>
-        <NpmDownloads />
+        <p className="animate-fade-up-delay-2 mt-8 text-xs text-stone-400">
+          Loved by users
+          {" · "}
+          <a
+            href="https://github.com/cdinnison/ray-finance"
+            className="transition-colors hover:text-stone-600"
+          >
+            Open source, MIT licensed
+          </a>
+          {" · "}
+          <a
+            href="https://www.producthunt.com/products/ray-7"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-stone-600"
+          >
+            #2 Product of the Day on Product Hunt
+          </a>
+          <NpmDownloads />
+        </p>
       </div>
     </section>
-  );
-}
-
-/* ─── Social Proof ─── */
-function SocialProof() {
-  return (
-    <div className="animate-fade-up-delay-2 flex items-center justify-center gap-8 px-6 -mb-4">
-      {/* 5-star reviews */}
-      <div className="flex flex-col items-center gap-1.5">
-        <div className="flex gap-0.5">
-          {[...Array(5)].map((_, i) => (
-            <svg key={i} className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-          ))}
-        </div>
-        <p className="text-xs text-stone-400">Loved by users</p>
-      </div>
-
-      <div className="h-8 w-px bg-stone-200" />
-
-      {/* Open source */}
-      <a
-        href="https://github.com/cdinnison/ray-finance"
-        className="flex flex-col items-center gap-1.5 transition-colors hover:opacity-70"
-      >
-        <div className="flex items-center gap-1.5">
-          <svg className="h-5 w-5 text-stone-700" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-          </svg>
-          <span className="text-sm font-semibold text-stone-700">Open Source</span>
-        </div>
-        <p className="whitespace-nowrap text-xs text-stone-400">MIT Licensed · Fully Auditable</p>
-      </a>
-
-      <div className="hidden h-8 w-px bg-stone-200 sm:block" />
-
-      {/* Product Hunt — hidden on mobile */}
-      <a
-        href="https://www.producthunt.com/products/ray-7?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_campaign=badge-ray-7"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hidden transition-opacity hover:opacity-80 sm:block"
-      >
-        <img
-          alt="Ray - Your personal CFO in the terminal | Product Hunt"
-          width="180"
-          height="39"
-          src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=1121525&theme=light&period=daily&t=1776122621761"
-        />
-      </a>
-    </div>
   );
 }
 
 /* ─── Terminal Demo ─── */
 function Terminal() {
   return (
-    <section className="px-6 -mt-9 py-16">
-      <div className="mx-auto max-w-4xl">
-        <div className="overflow-hidden rounded-2xl border border-stone-200 bg-stone-950 shadow-2xl shadow-stone-900/10">
+    <section className="py-12">
+      <div className="mx-auto max-w-3xl px-6">
+        <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-950">
           <TerminalDemo />
         </div>
       </div>
@@ -250,19 +210,18 @@ function Terminal() {
 /* ─── Story ─── */
 function Story() {
   return (
-    <section id="story" className="py-24 sm:py-32">
-      <div className="mx-auto max-w-3xl px-6">
-        <h2 className="text-center text-3xl font-extrabold tracking-tight text-stone-950 sm:text-4xl">
-          You know what you&nbsp;spent.<br className="sm:hidden" /> Now&nbsp;what?
+    <section id="story" className="py-20 sm:py-28">
+      <div className="mx-auto max-w-2xl px-6">
+        <h2 className="text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">
+          You know what you&nbsp;spent. Now&nbsp;what?
         </h2>
-        <p className="mx-auto mt-5 max-w-2xl text-center text-lg leading-relaxed text-stone-500">
+        <p className="mt-4 text-base leading-relaxed text-stone-500">
           Every finance tool ever built is great at showing you the past. None of them tell you what to do next. That&rsquo;s the gap Ray fills.
         </p>
 
-        <div className="mt-16 space-y-16">
+        <div className="mt-14 space-y-12">
           <StoryBlock
             label="The Apps"
-            icon={<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="5" y="2" width="14" height="20" rx="2" /><path d="M12 18h.01" /></svg>}
             title="Dashboards show. They don't tell."
             body="Monarch, Copilot, YNAB, Mint — they sort your transactions
               into pie charts and send you notifications. They're great at
@@ -273,7 +232,6 @@ function Story() {
 
           <StoryBlock
             label="The Spreadsheets"
-            icon={<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M3 15h18M9 3v18" /></svg>}
             title="Powerful, but you still do all the work."
             body="You built the perfect spreadsheet once. Formulas, projections,
               a debt payoff timeline. Even with Tiller syncing your data,
@@ -282,24 +240,11 @@ function Story() {
               what to do next, either."
           />
 
-          <div>
-            <p className="flex items-center gap-2 font-mono text-sm tracking-wide text-stone-400 uppercase">
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="m4 17 6-6-6-6M12 19h8" /></svg>
-              Then there&rsquo;s Ray
-            </p>
-            <h3 className="mt-3 text-2xl font-bold tracking-tight text-stone-950">
-              The only one that actually tells you what to do.
-            </h3>
-            <p className="mt-4 text-lg leading-relaxed text-stone-500">
-              Ask &ldquo;can I afford this?&rdquo; and you don&rsquo;t get
-              another chart&nbsp;&mdash; you get a yes, a no, or a
-              &ldquo;not yet, and here&rsquo;s what would change that.&rdquo;
-              Ray factors in your real situation, queries your actual bank
-              data, and hands you a decision. It remembers your goals, your
-              family, your strategy, and every call you&rsquo;ve made
-              together. Every conversation ends with a next move.
-            </p>
-          </div>
+          <StoryBlock
+            label="Then there's Ray"
+            title="The only one that actually tells you what to do."
+            body={`Ask "can I afford this?" and you don't get another chart — you get a yes, a no, or a "not yet, and here's what would change that." Ray factors in your real situation, queries your actual bank data, and hands you a decision. It remembers your goals, your family, your strategy, and every call you've made together. Every conversation ends with a next move.`}
+          />
         </div>
       </div>
     </section>
@@ -310,23 +255,20 @@ function StoryBlock({
   label,
   title,
   body,
-  icon,
 }: {
   label: string;
   title: string;
   body: string;
-  icon?: React.ReactNode;
 }) {
   return (
     <div>
-      <p className="flex items-center gap-2 font-mono text-sm tracking-wide text-stone-400 uppercase">
-        {icon}
+      <p className="font-mono text-xs tracking-widest text-stone-400 uppercase">
         {label}
       </p>
-      <h3 className="mt-3 text-2xl font-bold tracking-tight text-stone-950">
+      <h3 className="mt-2 text-lg font-semibold tracking-tight text-stone-950">
         {title}
       </h3>
-      <p className="mt-4 text-lg leading-relaxed text-stone-500">{body}</p>
+      <p className="mt-3 text-base leading-relaxed text-stone-500">{body}</p>
     </div>
   );
 }
@@ -358,31 +300,29 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 sm:py-32">
-      <div className="mx-auto max-w-5xl px-6">
+    <section id="how-it-works" className="py-20 sm:py-28">
+      <div className="mx-auto max-w-2xl px-6">
         <p className="font-mono text-xs tracking-widest text-stone-400 uppercase">
           How it works
         </p>
 
-        <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-stone-200 bg-stone-200 sm:grid-cols-3">
+        <div className="mt-10 space-y-10">
           {steps.map((step) => (
-            <div key={step.num} className="flex flex-col justify-between bg-white p-8">
+            <div key={step.num} className="flex gap-5">
+              <span className="font-mono text-sm text-stone-300">
+                {step.num}
+              </span>
               <div>
-                <span className="text-5xl font-extrabold text-stone-200">
-                  {step.num}
-                </span>
-                <h3 className="mt-4 text-lg font-bold text-stone-950">
+                <h3 className="text-base font-semibold text-stone-950">
                   {step.title}
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-stone-500">
+                <p className="mt-1.5 text-sm leading-relaxed text-stone-500">
                   {step.description}
                 </p>
-              </div>
-              <div className="mt-6 inline-flex items-center gap-2 self-start rounded-lg bg-stone-900 px-4 py-2.5">
-                <span className="text-stone-500">$</span>
-                <code className="font-mono text-xs text-stone-200">
+                <p className="mt-3 font-mono text-xs text-stone-500">
+                  <span className="text-stone-300">$ </span>
                   {step.code}
-                </code>
+                </p>
               </div>
             </div>
           ))}
@@ -412,34 +352,34 @@ const banks: { name: string; file: string; className?: string }[] = [
 
 function SupportedBanks() {
   return (
-    <section className="py-24 sm:py-32">
-      <div className="mx-auto max-w-5xl px-6">
+    <section className="py-20 sm:py-28">
+      <div className="mx-auto max-w-2xl px-6">
         <p className="font-mono text-xs tracking-widest text-stone-400 uppercase">
           Integrations
         </p>
-        <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-stone-950 sm:text-4xl">
+        <h2 className="mt-3 text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">
           Works with your bank, brokerage, and lender.
         </h2>
-        <p className="mt-4 max-w-2xl text-lg text-stone-500">
+        <p className="mt-4 text-base leading-relaxed text-stone-500">
           Ray connects to 12,000+ financial institutions through Plaid — from
           major banks to local credit unions.
         </p>
 
-        <div className="mt-12 grid grid-cols-3 gap-x-10 gap-y-10 sm:grid-cols-4 lg:grid-cols-7">
+        <div className="mt-12 grid grid-cols-3 items-center gap-x-8 gap-y-8 sm:grid-cols-5">
           {banks.map((bank) => (
             <div key={bank.file} className="flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`/banks/${bank.file}.svg`}
                 alt={bank.name}
-                className={`${bank.className ?? "h-6"} w-auto`}
+                className={`${bank.className ?? "h-5"} w-auto opacity-50 grayscale`}
               />
             </div>
           ))}
         </div>
 
-        <p className="mt-6 text-center text-sm text-stone-400">
-          And 12,000+ more institutions supported via Plaid
+        <p className="mt-10 text-sm text-stone-400">
+          And 12,000+ more institutions supported via Plaid.
         </p>
       </div>
     </section>
@@ -458,47 +398,42 @@ function Context() {
   ];
 
   return (
-    <section className="py-24 sm:py-32">
-      <div className="mx-auto max-w-5xl px-6">
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
-          <div>
-            <p className="font-mono text-xs tracking-widest text-stone-400 uppercase">
-              What makes Ray different
-            </p>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-stone-950 sm:text-4xl">
-              Tell Ray once. It remembers&nbsp;everything.
-            </h2>
-            <p className="mt-4 text-lg leading-relaxed text-stone-500">
-              Ray keeps a persistent profile of your life&nbsp;&mdash; family,
-              income, goals, strategy, and key decisions. That&rsquo;s why it
-              can tell you what to do, not just show you what you spent. The
-              advice you get on day&nbsp;30 is nothing like day&nbsp;one,
-              because Ray remembers everything that happened on
-              days&nbsp;1&nbsp;through&nbsp;29.
-            </p>
-          </div>
+    <section className="py-20 sm:py-28">
+      <div className="mx-auto max-w-2xl px-6">
+        <p className="font-mono text-xs tracking-widest text-stone-400 uppercase">
+          What makes Ray different
+        </p>
+        <h2 className="mt-3 text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">
+          Tell Ray once. It remembers&nbsp;everything.
+        </h2>
+        <p className="mt-4 text-base leading-relaxed text-stone-500">
+          Ray keeps a persistent profile of your life&nbsp;&mdash; family,
+          income, goals, strategy, and key decisions. That&rsquo;s why it
+          can tell you what to do, not just show you what you spent. The
+          advice you get on day&nbsp;30 is nothing like day&nbsp;one,
+          because Ray remembers everything that happened on
+          days&nbsp;1&nbsp;through&nbsp;29.
+        </p>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {items.map((item) => (
-              <div
-                key={item.label}
-                className="rounded-xl border border-stone-200 bg-white p-5"
-              >
-                <h3 className="text-sm font-semibold text-stone-950">
-                  {item.label}
-                </h3>
-                <p className="mt-1 text-sm text-stone-400">
-                  {item.example}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <dl className="mt-10 grid gap-x-8 gap-y-5 sm:grid-cols-2">
+          {items.map((item) => (
+            <div key={item.label}>
+              <dt className="text-sm font-medium text-stone-950">
+                {item.label}
+              </dt>
+              <dd className="mt-0.5 text-sm text-stone-400">
+                {item.example}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
 
-        {/* Before / After — terminal-style */}
-        <div className="mx-auto mt-20 max-w-4xl overflow-hidden rounded-2xl border border-stone-200 bg-stone-950 shadow-2xl shadow-stone-900/10">
+      {/* Before / After — terminal-style */}
+      <div className="mx-auto max-w-3xl px-6">
+        <div className="mt-16 overflow-hidden rounded-xl border border-stone-200 bg-stone-950">
           {/* Title bar */}
-          <div className="flex items-center border-b border-stone-800 px-4 py-3">
+          <div className="relative flex items-center border-b border-stone-800 px-4 py-3">
             <div className="flex gap-2">
               <div className="h-3 w-3 rounded-full bg-stone-700" />
               <div className="h-3 w-3 rounded-full bg-stone-700" />
@@ -543,7 +478,7 @@ function TerminalThread({
   ray: string;
 }) {
   return (
-    <div className="px-5 py-5 font-mono text-[11px] leading-[1.7] sm:px-8 sm:py-6 sm:text-[13px]">
+    <div className="px-5 py-5 font-mono text-[11px] leading-[1.7] sm:px-7 sm:py-6 sm:text-[12px]">
       {/* User question */}
       <p className="text-white">
         <span className="text-stone-500">{"❯ "}</span>
@@ -576,28 +511,29 @@ function TerminalThread({
 /* ─── Privacy ─── */
 function Privacy() {
   return (
-    <section id="privacy" className="py-24 sm:py-32">
-      <div className="mx-auto max-w-5xl px-6">
-        <div className="max-w-2xl">
-          <p className="font-mono text-sm tracking-wide text-stone-400 uppercase">
-            Privacy
-          </p>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-stone-950 sm:text-4xl">
-            Your financial data is never stored outside your machine.
-          </h2>
-          <p className="mt-6 text-lg leading-relaxed text-stone-500">
-            Ray runs entirely on your computer. There&rsquo;s no cloud, no
-            account, no server storing your data. Your financial history lives
-            in an encrypted database on your hard drive, and your name is
-            scrubbed before anything reaches the AI.
-          </p>
-        </div>
+    <section id="privacy" className="py-20 sm:py-28">
+      <div className="mx-auto max-w-2xl px-6">
+        <p className="font-mono text-xs tracking-widest text-stone-400 uppercase">
+          Privacy
+        </p>
+        <h2 className="mt-3 text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">
+          Your financial data is never stored outside your machine.
+        </h2>
+        <p className="mt-4 text-base leading-relaxed text-stone-500">
+          Ray runs entirely on your computer. There&rsquo;s no cloud, no
+          account, no server storing your data. Your financial history lives
+          in an encrypted database on your hard drive, and your name is
+          scrubbed before anything reaches the AI.
+        </p>
 
-        <div className="mt-16">
-          <PIIScramble />
-        </div>
+      </div>
 
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto mt-12 max-w-3xl px-6">
+        <PIIScramble />
+      </div>
+
+      <div className="mx-auto max-w-2xl px-6">
+        <div className="mt-12 grid gap-x-8 gap-y-8 sm:grid-cols-2">
           <PrivacyCard
             title="Encrypted at rest"
             description="Your data is encrypted on disk with the same standard used by banks. No one else can read it."
@@ -633,15 +569,15 @@ function PrivacyCard({
   href?: string;
 }) {
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-6">
-      <h3 className="text-base font-semibold text-stone-900">{title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-stone-500">
+    <div>
+      <h3 className="text-sm font-medium text-stone-950">{title}</h3>
+      <p className="mt-1.5 text-sm leading-relaxed text-stone-500">
         {description}
       </p>
       {href && (
         <a
           href={href}
-          className="mt-3 inline-block py-2 font-mono text-xs text-stone-400 underline decoration-stone-300 underline-offset-4 transition-colors hover:text-stone-600"
+          className="mt-2 inline-block font-mono text-xs text-stone-400 underline decoration-stone-300 underline-offset-4 transition-colors hover:text-stone-600"
         >
           view source
         </a>
@@ -653,34 +589,31 @@ function PrivacyCard({
 /* ─── Features ─── */
 function Features() {
   return (
-    <section id="features" className="border-t border-stone-200 bg-stone-100 py-24 sm:py-32">
-      <div className="mx-auto max-w-5xl px-6">
-        <p className="font-mono text-sm tracking-wide text-stone-400 uppercase">
+    <section id="features" className="py-20 sm:py-28">
+      <div className="mx-auto max-w-2xl px-6">
+        <p className="font-mono text-xs tracking-widest text-stone-400 uppercase">
           What Ray can do
         </p>
-        <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-stone-950 sm:text-4xl">
+        <h2 className="mt-3 text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">
           Not a dashboard. Not a chatbot. An advisor that tells you what to do.
         </h2>
-        <p className="mt-4 max-w-2xl text-lg text-stone-500">
+        <p className="mt-4 text-base leading-relaxed text-stone-500">
           Ray has 30+ tools that query your real bank data, run the math, and
           hand you the next move &mdash; not another chart.
         </p>
 
-        <div className="mt-16 grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-x-8 gap-y-8 sm:grid-cols-2">
           <Feature
             question={`"Can I afford to take this trip?"`}
             description="Ray projects your balance forward based on actual income and spending patterns. See the impact before you commit."
-
           />
           <Feature
             question={`"How's my score today?"`}
             description="A daily 0-100 behavior score with streaks and unlockable achievements. No restaurants for a week? That's Kitchen Hero. Five zero-spend days? Monk Mode. It turns financial discipline into a game you actually want to play."
-
           />
           <Feature
             question={`"What did we decide last time?"`}
             description="Ray remembers your goals, preferences, life events, and past decisions. Every conversation builds on the last one."
-
           />
           <Feature
             question={`"What's my net worth right now?"`}
@@ -708,11 +641,11 @@ function Feature({
   description: string;
 }) {
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-5">
-      <h3 className="font-mono text-base font-medium text-stone-900">
+    <div>
+      <h3 className="font-mono text-sm font-medium text-stone-950">
         {question}
       </h3>
-      <p className="mt-2 text-sm leading-relaxed text-stone-500">
+      <p className="mt-1.5 text-sm leading-relaxed text-stone-500">
         {description}
       </p>
     </div>
@@ -722,62 +655,54 @@ function Feature({
 /* ─── Pricing ─── */
 function Pricing() {
   return (
-    <section id="pricing" className="py-24 sm:py-32">
-      <div className="mx-auto max-w-5xl px-6">
-        <div className="text-center">
-          <p className="font-mono text-sm tracking-wide text-stone-400 uppercase">
-            Pricing
-          </p>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-stone-950 sm:text-4xl">
-            Free forever. Or skip the setup.
-          </h2>
-          <p className="mx-auto mt-4 max-w-lg text-lg text-stone-500">
-            Two ways to run Ray. Both keep your data local.
-          </p>
-        </div>
+    <section id="pricing" className="py-20 sm:py-28">
+      <div className="mx-auto max-w-2xl px-6">
+        <p className="font-mono text-xs tracking-widest text-stone-400 uppercase">
+          Pricing
+        </p>
+        <h2 className="mt-3 text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">
+          Free forever. Or skip the setup.
+        </h2>
+        <p className="mt-4 text-base leading-relaxed text-stone-500">
+          Two ways to run Ray. Both keep your data local.
+        </p>
 
-        <div className="mx-auto mt-16 grid max-w-4xl gap-8 sm:grid-cols-2 items-start">
+        <div className="mt-12 grid items-start gap-x-10 gap-y-14 sm:grid-cols-2">
           {/* BYOK */}
-          <div className="rounded-2xl border border-stone-200 bg-white p-8 flex flex-col sm:min-h-[560px]">
-            <span className="whitespace-nowrap self-start rounded-full bg-stone-100 px-2.5 py-0.5 text-xs font-medium text-stone-500">
-              full control
-            </span>
-            <h3 className="mt-2 text-lg font-bold text-stone-900">Bring Your Own Keys</h3>
-            <p className="mt-1 text-sm text-stone-500">Free and open source forever</p>
-            <p className="mt-6">
-              <span className="text-4xl font-extrabold tracking-tight text-stone-900">
+          <div className="border-t border-stone-200 pt-6">
+            <h3 className="text-base font-semibold text-stone-950">Bring Your Own Keys</h3>
+            <p className="mt-0.5 text-sm text-stone-500">Free and open source forever</p>
+            <p className="mt-5">
+              <span className="text-3xl font-bold tracking-tight text-stone-900">
                 $0
               </span>
               <span className="text-sm text-stone-500">/forever</span>
             </p>
-            <ul className="mt-8 space-y-3 text-sm text-stone-600">
-              <PricingItem>Open source, MIT licensed</PricingItem>
-              <PricingItem>Your own AI key (Anthropic, OpenAI, Ollama, etc.)</PricingItem>
-              <PricingItem>Your own Plaid (US/Canada) or Bridge (Europe) credentials</PricingItem>
-              <PricingItem>Full model selection</PricingItem>
-              <PricingItem>All features included</PricingItem>
+            <ul className="mt-6 space-y-2 text-sm leading-relaxed text-stone-500">
+              <li>Open source, MIT licensed</li>
+              <li>Your own AI key (Anthropic, OpenAI, Ollama, etc.)</li>
+              <li>Your own Plaid (US/Canada) or Bridge (Europe) credentials</li>
+              <li>Full model selection</li>
+              <li>All features included</li>
             </ul>
             <CopyCommand
               command="npm install -g ray-finance"
-              className="mt-8 block rounded-lg bg-stone-900 px-4 py-3 text-center text-sm text-white transition-colors hover:bg-stone-800 [&>span:first-child]:text-stone-500"
+              className="mt-7 text-sm text-stone-900 [&>span:first-child]:text-stone-400"
             />
             <a
               href="https://github.com/cdinnison/ray-finance"
-              className="mt-3 block text-center text-xs text-stone-400 underline decoration-stone-300 underline-offset-4 transition-colors hover:text-stone-600"
+              className="mt-3 block text-xs text-stone-400 underline decoration-stone-300 underline-offset-4 transition-colors hover:text-stone-600"
             >
               View source on GitHub
             </a>
-            <div className="grow" />
 
-            <details className="pt-6 group">
-              <summary className="cursor-pointer select-none w-full rounded-lg border border-stone-200 px-4 py-3 text-xs text-stone-400 hover:border-stone-300 hover:text-stone-500 transition-colors flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <svg className="h-3 w-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-                  Steps to self-host
-                </span>
+            <details className="group mt-7">
+              <summary className="flex cursor-pointer items-center gap-1.5 text-xs text-stone-400 transition-colors select-none hover:text-stone-600">
+                <svg className="h-3 w-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                Steps to self-host
                 <span className="font-mono text-[10px] text-stone-300 group-open:hidden">~2 weeks</span>
               </summary>
-              <div className="mt-4 ml-1 border-l-2 border-stone-200 pl-4 space-y-4">
+              <div className="mt-4 space-y-4 border-l border-stone-200 pl-4">
                 <SetupStep time="~5 min" href="/guides/get-anthropic-api-key">
                   Get an AI API key (Anthropic, OpenAI, or run Ollama locally)
                 </SetupStep>
@@ -794,52 +719,46 @@ function Pricing() {
                   Run <code className="rounded bg-stone-100 px-1 py-0.5">ray link</code> to connect bank
                 </SetupStep>
               </div>
-              <p className="mt-4 ml-1 text-[11px] font-mono text-stone-400">
+              <p className="mt-4 font-mono text-[11px] text-stone-400">
                 ~20 min of work + 1-2 week wait for Plaid approval
               </p>
             </details>
           </div>
 
-          {/* Ray API Key */}
-          <div className="rounded-2xl border-2 border-stone-900 bg-white p-8 flex flex-col sm:min-h-[560px]">
-            <span className="inline-flex self-start items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">
-              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2H22l-6 4.8 2.4 7.2L12 16.4 5.6 21.2 8 14 2 9.2h7.6z"/></svg>
-              most popular
-            </span>
-            <h3 className="mt-2 text-lg font-bold text-stone-900">
-              Ray Pro
-            </h3>
-            <p className="mt-1 text-sm text-stone-500">
-              Just install and go
-            </p>
-            <p className="mt-6">
-              <span className="text-4xl font-extrabold tracking-tight text-stone-900">
+          {/* Ray Pro */}
+          <div className="border-t border-stone-900 pt-6">
+            <div className="flex items-baseline justify-between gap-3">
+              <h3 className="text-base font-semibold text-stone-950">Ray Pro</h3>
+              <span className="font-mono text-[10px] tracking-widest text-stone-400 uppercase">
+                most popular
+              </span>
+            </div>
+            <p className="mt-0.5 text-sm text-stone-500">Just install and go</p>
+            <p className="mt-5">
+              <span className="text-3xl font-bold tracking-tight text-stone-900">
                 $10
               </span>
               <span className="text-sm text-stone-500">/month</span>
             </p>
-            <ul className="mt-8 space-y-3 text-sm text-stone-600">
-              <PricingItem>AI and bank connection included</PricingItem>
-              <PricingItem>Connect your accounts in seconds</PricingItem>
-              <PricingItem>Your data stays on your machine</PricingItem>
-              <PricingItem>All features, no limits</PricingItem>
-              <PricingItem>Cancel anytime</PricingItem>
+            <ul className="mt-6 space-y-2 text-sm leading-relaxed text-stone-500">
+              <li>AI and bank connection included</li>
+              <li>Connect your accounts in seconds</li>
+              <li>Your data stays on your machine</li>
+              <li>All features, no limits</li>
+              <li>Cancel anytime</li>
             </ul>
             <CopyCommand
               command="npm install -g ray-finance"
-              className="mt-8 block rounded-lg bg-stone-900 px-4 py-3 text-center text-sm text-white shadow-lg shadow-stone-900/20 transition-colors hover:bg-stone-800 [&>span:first-child]:text-stone-500"
+              className="mt-7 inline-block rounded-full bg-stone-900 px-5 py-2.5 text-sm text-white transition-colors hover:bg-stone-800 [&>span:first-child]:text-stone-500"
             />
-            <div className="grow" />
 
-            <details className="pt-6 group">
-              <summary className="cursor-pointer select-none w-full rounded-lg border border-stone-200 px-4 py-3 text-xs text-stone-400 hover:border-stone-300 hover:text-stone-500 transition-colors flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <svg className="h-3 w-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-                  Steps to sign up
-                </span>
+            <details className="group mt-7">
+              <summary className="flex cursor-pointer items-center gap-1.5 text-xs text-stone-400 transition-colors select-none hover:text-stone-600">
+                <svg className="h-3 w-3 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                Steps to sign up
                 <span className="font-mono text-[10px] text-stone-300 group-open:hidden">~5 min</span>
               </summary>
-              <div className="mt-4 ml-1 border-l-2 border-stone-200 pl-4 space-y-4">
+              <div className="mt-4 space-y-4 border-l border-stone-200 pl-4">
                 <SetupStep time="~2 min">
                   Run <code className="rounded bg-stone-100 px-1 py-0.5">ray setup</code> to get your key
                 </SetupStep>
@@ -847,7 +766,7 @@ function Pricing() {
                   Run <code className="rounded bg-stone-100 px-1 py-0.5">ray link</code> to connect bank
                 </SetupStep>
               </div>
-              <p className="mt-4 ml-1 text-[11px] font-mono text-stone-400">
+              <p className="mt-4 font-mono text-[11px] text-stone-400">
                 Total: ~3 minutes
               </p>
             </details>
@@ -862,9 +781,7 @@ function SetupStep({ children, time, href }: { children: React.ReactNode; time: 
   const content = (
     <div className="flex items-start justify-between gap-3">
       <p className="text-xs text-stone-500">{children}</p>
-      <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-mono ${
-        time.includes("week") ? "bg-amber-50 text-amber-600" : "bg-stone-100 text-stone-400"
-      }`}>
+      <span className="shrink-0 font-mono text-[10px] text-stone-400">
         {time}
       </span>
     </div>
@@ -875,49 +792,27 @@ function SetupStep({ children, time, href }: { children: React.ReactNode; time: 
   return content;
 }
 
-function PricingItem({ children }: { children: React.ReactNode }) {
-  return (
-    <li className="flex items-start gap-2">
-      <svg
-        className="mt-0.5 h-4 w-4 shrink-0 text-stone-900"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={2.5}
-        stroke="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M4.5 12.75l6 6 9-13.5"
-        />
-      </svg>
-      {children}
-    </li>
-  );
-}
-
 /* ─── FAQ ─── */
 function FAQ() {
   return (
-    <section id="faq" className="py-24 sm:py-32">
-      <div className="mx-auto max-w-3xl px-6">
-        <p className="font-mono text-sm tracking-wide text-stone-400 uppercase">
+    <section id="faq" className="py-20 sm:py-28">
+      <div className="mx-auto max-w-2xl px-6">
+        <p className="font-mono text-xs tracking-widest text-stone-400 uppercase">
           FAQ
         </p>
-        <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-stone-950 sm:text-4xl">
+        <h2 className="mt-3 text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">
           Common questions about Ray
         </h2>
 
-        <div className="mt-12 divide-y divide-stone-200">
+        <div className="mt-10 divide-y divide-stone-200">
           {faqItems.map((item) => (
-            <details key={item.question} className="group py-6">
+            <details key={item.question} className="group py-5">
               <summary className="flex cursor-pointer items-start justify-between gap-4">
-                <h3 className="text-base font-semibold text-stone-900 group-open:text-stone-950">
+                <h3 className="text-base font-medium text-stone-900">
                   {item.question}
                 </h3>
                 <svg
-                  className="mt-1 h-5 w-5 shrink-0 text-stone-400 transition-transform group-open:rotate-45"
+                  className="mt-1 h-4 w-4 shrink-0 text-stone-400 transition-transform group-open:rotate-45"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={2}
@@ -949,31 +844,30 @@ function FAQ() {
 /* ─── CTA ─── */
 function CTA() {
   return (
-    <section className="bg-stone-950 py-24 sm:py-32">
-      <div className="mx-auto max-w-3xl px-6 text-center">
-        <h2 className="text-2xl leading-[1.3] font-extrabold tracking-tight text-white sm:text-3xl lg:text-5xl">
-          Stop tracking.<br /> Start&nbsp;deciding.
+    <section className="py-20 sm:py-28">
+      <div className="mx-auto max-w-2xl px-6 text-center">
+        <h2 className="text-2xl font-bold tracking-tight text-stone-950 sm:text-3xl">
+          Stop tracking. Start&nbsp;deciding.
         </h2>
-        <p className="mx-auto mt-6 max-w-xl text-lg text-stone-400">
+        <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-stone-500">
           Every other finance app shows you what you spent. Ray tells you
           what to do. Free, open source, and takes five minutes to set up.
         </p>
-        <div className="mt-10 flex flex-col items-center gap-6">
+        <div className="mt-8 flex flex-col items-center gap-4">
           <CopyCommand
             command="npm install -g ray-finance"
-            className="rounded-lg border border-stone-800 bg-stone-900 px-6 py-3.5 text-sm text-white [&>span:first-child]:text-stone-500"
+            className="rounded-full bg-stone-900 px-5 py-2.5 text-sm text-white transition-colors hover:bg-stone-800 [&>span:first-child]:text-stone-500"
           />
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-5 text-sm">
             <a
               href="https://github.com/cdinnison/ray-finance"
-              className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-stone-900 transition-colors hover:bg-stone-100"
+              className="text-stone-500 underline decoration-stone-300 underline-offset-4 transition-colors hover:text-stone-900"
             >
-              <GitHubIcon />
               View on GitHub
             </a>
             <a
               href="#pricing"
-              className="text-sm font-medium text-stone-400 underline decoration-stone-700 underline-offset-4 transition-colors hover:text-white"
+              className="text-stone-500 underline decoration-stone-300 underline-offset-4 transition-colors hover:text-stone-900"
             >
               Compare plans
             </a>
@@ -981,8 +875,8 @@ function CTA() {
         </div>
 
         {/* Founder story */}
-        <div className="mx-auto mt-20 max-w-xl border-t border-stone-800 pt-12">
-          <p className="text-lg leading-relaxed text-stone-400 italic">
+        <div className="mx-auto mt-20 max-w-xl border-t border-stone-200 pt-12 text-left">
+          <p className="text-base leading-relaxed text-stone-500 italic">
             &ldquo;I tried every finance app, built every spreadsheet, and talked to
             a financial advisor who charged $200/hr to tell me things I already
             knew. Nothing actually helped me make better decisions with my own
@@ -990,11 +884,11 @@ function CTA() {
             knows my real numbers, runs locally, and is honest enough to
             open&#8209;source.&rdquo;
           </p>
-          <p className="mt-6 text-sm text-stone-500">
+          <p className="mt-5 text-sm text-stone-400">
             &mdash;{" "}
             <a
               href="https://github.com/cdinnison"
-              className="underline decoration-stone-700 underline-offset-4 transition-colors hover:text-stone-300"
+              className="underline decoration-stone-300 underline-offset-4 transition-colors hover:text-stone-600"
             >
               Clark Dinnison
             </a>
@@ -1003,18 +897,5 @@ function CTA() {
         </div>
       </div>
     </section>
-  );
-}
-
-
-function GitHubIcon() {
-  return (
-    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        fillRule="evenodd"
-        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-        clipRule="evenodd"
-      />
-    </svg>
   );
 }
